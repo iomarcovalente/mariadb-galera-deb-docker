@@ -107,6 +107,8 @@ export DB_LDAP_BASE_LOOKUP="$(get_env_var_value LDAP_BASE_LOOKUP)"
 DB_LDAP_NSS_INITGROUPS_IGNOREUSERS="$(get_env_var_value LDAP_NSS_INITGROUPS_IGNOREUSERS)"
 export DB_LDAP_NSS_INITGROUPS_IGNOREUSERS="${DB_LDAP_NSS_INITGROUPS_IGNOREUSERS:-root,nslcd}"
 export DB_LDAP_SCOPE="$(get_env_var_value LDAP_SCOPE)"
+export DB_LDAP_SEARCH_MAP="$(get_env_var_value LDAP_SEARCH_MAP)"
+export DB_LDAP_SEARCH_FILTER="$(get_env_var_value LDAP_SEARCH_FILTER)"
 export DB_LDAP_TLS_REQCERT="$(get_env_var_value LDAP_TLS_REQCERT)"
 read -r -a DB_EXTRA_FLAGS <<< "$(mysql_extra_flags)"
 export DB_EXTRA_FLAGS
@@ -444,6 +446,16 @@ EOF
         if [[ -n "${DB_LDAP_TLS_REQCERT}" ]]; then
             cat >>"/etc/nslcd.conf"<<EOF
 tls_reqcert $DB_LDAP_TLS_REQCERT
+EOF
+        fi
+        if [[ -n "${DB_LDAP_SEARCH_MAP}" ]]; then
+            cat >>"/etc/nslcd.conf"<<EOF
+map passwd uid $DB_LDAP_SEARCH_MAP
+EOF
+        fi
+        if [[ -n "${DB_LDAP_SEARCH_FILTER}" ]]; then
+            cat >>"/etc/nslcd.conf"<<EOF
+filter passwd (objectClass=$DB_LDAP_SEARCH_FILTER)
 EOF
         fi
         chmod 600 /etc/nslcd.conf
