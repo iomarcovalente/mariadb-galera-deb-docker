@@ -1,0 +1,4 @@
+image-name: mariadb-galera-deb-docker
+versions:
+  - tag: v0.1.0-10.3.21
+    description: Working version of mariadb-galera-deb-docker fork
